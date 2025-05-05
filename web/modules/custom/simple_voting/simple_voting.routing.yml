@@ -1,0 +1,127 @@
+simple_voting.home:
+  path: '/'
+  defaults:
+    _controller: '\Drupal\simple_voting\Controller\VotingPublicController::listQuestions'
+    _title: 'Simple Voting System'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+    _admin_route: FALSE
+
+simple_voting.settings:
+  path: '/admin/config/simple_voting/settings'
+  defaults:
+    _form: '\Drupal\simple_voting\Form\SimpleVotingSettingsForm'
+    _title: 'Simple Voting Settings'
+  requirements:
+    _permission: 'administer simple voting'
+
+entity.voting_question.collection:
+  path: '/admin/structure/voting-questions'
+  defaults:
+    _entity_list: 'voting_question'
+    _title: 'Voting Questions'
+  requirements:
+    _permission: 'administer voting questions'
+
+entity.voting_question.add_form:
+  path: '/admin/structure/voting-questions/add'
+  defaults:
+    _entity_form: 'voting_question.add'
+    _title: 'Add voting question'
+  requirements:
+    _permission: 'administer voting questions'
+
+entity.voting_question.edit_form:
+  path: '/admin/structure/voting-questions/{voting_question}/edit'
+  defaults:
+    _entity_form: 'voting_question.edit'
+    _title: 'Edit voting question'
+  requirements:
+    _permission: 'administer voting questions'
+
+entity.voting_question.delete_form:
+  path: '/admin/structure/voting-questions/{voting_question}/delete'
+  defaults:
+    _entity_form: 'voting_question.delete'
+    _title: 'Delete voting question'
+  requirements:
+    _permission: 'administer voting questions'
+
+entity.voting_question.manage_options:
+  path: '/admin/structure/voting-questions/{voting_question}/options'
+  defaults:
+    _controller: '\Drupal\simple_voting\Controller\VotingQuestionController::manageOptions'
+    _title_callback: '\Drupal\simple_voting\Controller\VotingQuestionController::getOptionsPageTitle'
+  requirements:
+    _permission: 'administer voting options'
+    voting_question: \d+
+
+simple_voting.questions:
+  path: '/voting'
+  defaults:
+    _controller: '\Drupal\simple_voting\Controller\VotingPublicController::listQuestions'
+    _title: 'Available Voting Questions'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+
+simple_voting.question:
+  path: '/voting/{voting_question}'
+  defaults:
+    _controller: '\Drupal\simple_voting\Controller\VotingPublicController::viewQuestion'
+    _title_callback: '\Drupal\simple_voting\Controller\VotingPublicController::getQuestionTitle'
+  requirements:
+    _role: 'authenticated'
+    voting_question: \d+
+  options:
+    no_cache: 'TRUE'
+
+# Public routes for voting interface
+simple_voting.public_vote:
+  path: '/voting/{voting_question}/vote/{voting_option}'
+  defaults:
+    _controller: '\Drupal\simple_voting\Controller\VotingPublicController::vote'
+    _title: 'Vote'
+  requirements:
+    _role: 'authenticated'
+    voting_question: \d+
+  options:
+    no_cache: 'TRUE'
+    voting_option: \d+
+  methods: [POST]
+
+# Entity forms for voting options
+entity.voting_option.add_form:
+  path: '/admin/structure/voting-options/add'
+  defaults:
+    _entity_form: 'voting_option.add'
+    _title: 'Add voting option'
+  requirements:
+    _permission: 'administer voting options'
+
+entity.voting_option.edit_form:
+  path: '/admin/structure/voting-options/{voting_option}/edit'
+  defaults:
+    _entity_form: 'voting_option.edit'
+    _title: 'Edit voting option'
+  requirements:
+    _permission: 'administer voting options'
+
+entity.voting_option.delete_form:
+  path: '/admin/structure/voting-options/{voting_option}/delete'
+  defaults:
+    _entity_form: 'voting_option.delete'
+    _title: 'Delete voting option'
+  requirements:
+    _permission: 'administer voting options'
+
+simple_voting.documentation:
+  path: '/admin/voting/documentation'
+  defaults:
+    _controller: '\Drupal\simple_voting\Controller\VotingPublicController::documentation'
+    _title: 'Voting System Documentation'
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,5 @@
+/* Hides the inner content of the footer but keeps the <footer> in the HTML */
+.site-footer {
+  background: transparent !important;
+}
+

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="Drupal Standard">
+  <description>Drupal coding standard for all custom modules and themes</description>
+  <rule ref="Drupal">
+    <exclude name="Drupal.NamingConventions.ValidFunctionName"/>
+    <exclude name="Generic.PHP.Syntax"/>
+    <exclude name="Squiz.Commenting.InlineComment"/>
+  </rule>
+  <file>web/modules/custom</file>
+  <file>web/themes/custom</file>
+  <arg name="extensions" value="php,inc,module,install,profile,theme"/>
+  <arg name="warning-severity" value="0"/>
+</ruleset>

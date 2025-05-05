@@ -1,0 +1,4 @@
+services:
+  simple_voting.voting_controller:
+    class: Drupal\simple_voting\Controller\VotingController
+    arguments: ['@entity_type.manager']

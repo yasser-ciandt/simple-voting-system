@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Contains simple_voting.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function simple_voting_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.simple_voting':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Simple Voting module allows administrators to create voting questions and lets users vote on them.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function simple_voting_theme() {
+  return [
+    'voting_question' => [
+      'variables' => [
+        'question' => NULL,
+        'options' => [],
+        'show_results' => FALSE,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function simple_voting_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'simple_voting_bootstrap/admin-styling';
+}

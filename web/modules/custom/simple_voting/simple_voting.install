@@ -1,0 +1,409 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Simple Voting module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function simple_voting_install() {
+  // Set default configuration.
+  \Drupal::configFactory()->getEditable('simple_voting.settings')
+    ->set('system_enabled', TRUE)
+    ->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function simple_voting_uninstall() {
+  // Delete configuration.
+  \Drupal::configFactory()->getEditable('simple_voting.settings')->delete();
+}
+
+/**
+ * Implements hook_schema().
+ */
+function simple_voting_schema() {
+  $schema = [];
+
+  $schema['voting_question'] = [
+    'description' => 'The base table for voting questions.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique voting question ID.',
+      ],
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Unique identifier for this entity.',
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The title of the voting question.',
+      ],
+      'identifier' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Unique identifier for the question.',
+      ],
+      'show_results' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Whether to show results after voting.',
+      ],
+      'status' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Whether the question is active.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The Unix timestamp when the question was created.',
+      ],
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The Unix timestamp when the question was most recently saved.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+      'identifier' => ['identifier'],
+    ],
+  ];
+
+  $schema['voting_option'] = [
+    'description' => 'The base table for voting options.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique voting option ID.',
+      ],
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Unique identifier for this entity.',
+      ],
+      'langcode' => [
+        'type' => 'varchar_ascii',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The language code for this entity.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+    ],
+  ];
+
+  $schema['voting_option_field_data'] = [
+    'description' => 'The data table for voting options.',
+    'fields' => [
+      'id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The voting option ID.',
+      ],
+      'langcode' => [
+        'type' => 'varchar_ascii',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The language code for this data item.',
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The title of the voting option.',
+      ],
+      'description__value' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'The description text.',
+      ],
+      'description__format' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => 'The description format.',
+      ],
+      'image__target_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'The ID of the file entity.',
+      ],
+      'image__alt' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => FALSE,
+        'description' => 'Alternative image text.',
+      ],
+      'image__title' => [
+        'type' => 'varchar',
+        'length' => 1024,
+        'not null' => FALSE,
+        'description' => 'Image title text.',
+      ],
+      'image__width' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'The width of the image in pixels.',
+      ],
+      'image__height' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'The height of the image in pixels.',
+      ],
+      'question_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The ID of the question this option belongs to.',
+      ],
+      'votes' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The number of votes for this option.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The Unix timestamp when the option was created.',
+      ],
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The Unix timestamp when the option was most recently saved.',
+      ],
+      'default_langcode' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'A boolean indicating whether this is the default language.',
+      ],
+    ],
+    'primary key' => ['id', 'langcode'],
+    'indexes' => [
+      'voting_option_field__title' => ['title'],
+    ],
+    'foreign keys' => [
+      'voting_option' => [
+        'table' => 'voting_option',
+        'columns' => ['id' => 'id'],
+      ],
+      'question' => [
+        'table' => 'voting_question',
+        'columns' => ['question_id' => 'id'],
+      ],
+    ],
+  ];
+
+  // Add the description field table.
+  $schema['voting_option__description'] = [
+    'description' => 'Data storage for voting option description field.',
+    'fields' => [
+      'bundle' => [
+        'type' => 'varchar_ascii',
+        'not null' => TRUE,
+        'length' => 128,
+        'default' => '',
+      ],
+      'deleted' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'size' => 'tiny',
+        'default' => 0,
+      ],
+      'entity_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'revision_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'langcode' => [
+        'type' => 'varchar_ascii',
+        'not null' => TRUE,
+        'length' => 32,
+        'default' => '',
+      ],
+      'delta' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'description_value' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+      'description_format' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['entity_id', 'deleted', 'delta', 'langcode'],
+    'indexes' => [
+      'bundle' => ['bundle'],
+      'revision_id' => ['revision_id'],
+    ],
+  ];
+
+  // Add the image field table.
+  $schema['voting_option__image'] = [
+    'description' => 'Data storage for voting option image field.',
+    'fields' => [
+      'bundle' => [
+        'type' => 'varchar_ascii',
+        'not null' => TRUE,
+        'length' => 128,
+        'default' => '',
+      ],
+      'deleted' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'size' => 'tiny',
+        'default' => 0,
+      ],
+      'entity_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'revision_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'langcode' => [
+        'type' => 'varchar_ascii',
+        'not null' => TRUE,
+        'length' => 32,
+        'default' => '',
+      ],
+      'delta' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'image_target_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+      'image_alt' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => FALSE,
+      ],
+      'image_title' => [
+        'type' => 'varchar',
+        'length' => 1024,
+        'not null' => FALSE,
+      ],
+      'image_width' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+      'image_height' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['entity_id', 'deleted', 'delta', 'langcode'],
+    'indexes' => [
+      'bundle' => ['bundle'],
+      'revision_id' => ['revision_id'],
+    ],
+    'foreign keys' => [
+      'image_target_id' => [
+        'table' => 'file_managed',
+        'columns' => ['image_target_id' => 'fid'],
+      ],
+    ],
+  ];
+
+  // Add user votes table.
+  $schema['simple_voting_user_votes'] = [
+    'description' => 'Stores user votes for voting questions.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique vote ID.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The {users}.uid that cast the vote.',
+      ],
+      'question_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The {voting_question}.id that was voted on.',
+      ],
+      'option_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The {voting_option}.id that was selected.',
+      ],
+      'timestamp' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The Unix timestamp when the vote was cast.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'user_question' => ['uid', 'question_id'],
+      'option' => ['option_id'],
+    ],
+    'foreign keys' => [
+      'voter' => [
+        'table' => 'users',
+        'columns' => ['uid' => 'uid'],
+      ],
+      'voted_question' => [
+        'table' => 'voting_question',
+        'columns' => ['question_id' => 'id'],
+      ],
+      'voted_option' => [
+        'table' => 'voting_option',
+        'columns' => ['option_id' => 'id'],
+      ],
+    ],
+  ];
+
+  return $schema;
+}

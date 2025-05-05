@@ -1,0 +1,50 @@
+name: simple-voting
+recipe: drupal11
+config:
+  via: nginx
+  webroot: web
+  xdebug: 'coverage, debug'
+  config:
+    php: .lando/php.ini
+
+
+tooling:
+  phpunit:
+    service: appserver
+    cmd: cd /app && vendor/bin/phpunit
+    description: "Run PHPUnit tests"
+
+  test-all:
+    service: appserver
+    cmd: cd /app && vendor/bin/phpunit
+    description: "Run all tests"
+
+  test-module:
+    service: appserver
+    cmd: cd /app && vendor/bin/phpunit web/modules/custom/$MODULE/tests
+    description: "Run tests for a specific module (usage: lando test-module --MODULE=simple_voting)"
+
+  test-unit:
+    service: appserver
+    cmd: cd /app && vendor/bin/phpunit web/modules/custom/$MODULE/tests/src/Unit
+    description: "Run unit tests for a module (usage: lando test-unit --MODULE=simple_voting)"
+
+  test-file:
+    service: appserver
+    cmd: cd /app && vendor/bin/phpunit $FILE
+    description: "Run tests from a specific file (usage: lando test-file --FILE=web/modules/custom/simple_voting/tests/src/Unit/Entity/VotingQuestionTest.php)"
+
+  test-method:
+    service: appserver
+    cmd: cd /app && vendor/bin/phpunit --filter "$LANDO_METHOD" "$LANDO_FILE"
+    description: "Run a specific test method (usage: lando test-method --METHOD=testQuestionTitle --FILE=web/modules/custom/simple_voting/tests/src/Unit/Entity/VotingQuestionTest.php)"
+
+  phpcs:
+    service: appserver
+    description: "Run PHP_CodeSniffer with Drupal standards (custom modules/themes)"
+    cmd: cd /app && vendor/bin/phpcs
+
+  phpcbf:
+    service: appserver
+    description: "Auto-fix with PHP_CodeSniffer (custom modules/themes)"
+    cmd: cd /app && vendor/bin/phpcbf

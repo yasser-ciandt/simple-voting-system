@@ -1,0 +1,7 @@
+name: 'Simple Voting REST'
+type: module
+description: 'REST API endpoints for the Simple Voting module.'
+core_version_requirement: ^8 || ^9 || ^10 || ^11
+dependencies:
+  - simple_voting
+package: Custom

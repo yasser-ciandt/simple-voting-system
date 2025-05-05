@@ -1,0 +1,30 @@
+# API routes for Simple Voting REST
+simple_voting_rest.api_vote:
+  path: '/api/simple-voting/{voting_question}/vote'
+  defaults:
+    _controller: '\Drupal\simple_voting_rest\Controller\VotingController::vote'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+simple_voting_rest.api_questions:
+  path: '/api/simple-voting/questions'
+  defaults:
+    _controller: '\Drupal\simple_voting_rest\Controller\VotingController::getQuestions'
+  requirements:
+    _permission: 'access content'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+simple_voting_rest.api_question:
+  path: '/api/simple-voting/questions/{voting_question}'
+  defaults:
+    _controller: '\Drupal\simple_voting_rest\Controller\VotingController::getQuestion'
+  requirements:
+    _permission: 'access content'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']

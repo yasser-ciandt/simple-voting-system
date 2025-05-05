@@ -1,0 +1,8 @@
+simple_voting.settings:
+  type: config_object
+  label: 'Simple Voting settings'
+  mapping:
+    system_enabled:
+      type: boolean
+      label: 'System enabled'
+      description: 'Whether the voting system is enabled globally'

@@ -1,0 +1,15 @@
+global-styling:
+  version: VERSION
+  css:
+    theme:
+      css/style.css: {}
+      css/global-styling.css: {}
+      css/voting_form.css: {}
+  js:
+    js/script.js: {}
+
+admin-styling:
+  version: VERSION
+  css:
+    theme:
+      css/voting_form.css: {}

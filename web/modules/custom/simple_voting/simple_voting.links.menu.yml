@@ -1,0 +1,29 @@
+simple_voting.admin:
+  title: 'Voting System'
+  description: 'Manage the voting system'
+  route_name: entity.voting_question.collection
+  parent: system.admin
+  weight: 0
+  metadata:
+    icon_class: 'fas fa-vote-yea'
+
+simple_voting.questions:
+  title: 'Questions'
+  description: 'Manage voting questions'
+  parent: simple_voting.admin
+  route_name: entity.voting_question.collection
+  weight: 0
+
+simple_voting.settings:
+  title: 'Settings'
+  description: 'Configure voting system settings'
+  parent: simple_voting.admin
+  route_name: simple_voting.settings
+  weight: 1
+
+simple_voting.documentation:
+  title: 'Documentation'
+  description: 'View system documentation'
+  parent: simple_voting.admin
+  route_name: simple_voting.documentation
+  weight: 2

@@ -1,0 +1,18 @@
+administer simple voting:
+  title: 'Administer Simple Voting'
+  description: 'Allow access to Simple Voting administration pages.'
+  restrict access: true
+
+administer voting questions:
+  title: 'Administer voting questions'
+  description: 'Create, edit, and delete voting questions.'
+  restrict access: true
+
+administer voting options:
+  title: 'Administer voting options'
+  description: 'Create, edit, and delete voting options.'
+  restrict access: true
+
+vote on questions:
+  title: 'Vote on questions'
+  description: 'Allow users to vote on questions.'
